@@ -1,0 +1,33 @@
+name: Vitalized UPDATE-feed Updater
+
+# Prijs + voorraad + inkoop van BESTAANDE producten. 2x per dag.
+# Logt in op de partnerportal met VITALIZED_USER/VITALIZED_PASS (repo-Secrets).
+
+on:
+  schedule:
+    - cron: "0 6,18 * * *"   # 06:00 en 18:00 UTC
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Dependencies
+        run: pip install -r requirements.txt
+      - name: UPDATE-feed scraper
+        env:
+          VITALIZED_USER: ${{ secrets.VITALIZED_USER }}
+          VITALIZED_PASS: ${{ secrets.VITALIZED_PASS }}
+        run: python scraper.py
+      - name: Committen en pushen
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add vitalized_feed.xml
+          git diff --staged --quiet || git commit -m "🔄 Vitalized UPDATE-feed: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git pull --rebase origin main
+          git push

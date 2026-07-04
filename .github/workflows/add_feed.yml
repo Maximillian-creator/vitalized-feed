@@ -1,0 +1,34 @@
+name: Vitalized ADD-feed Updater
+
+# Volledige productinfo om NIEUWE producten met Stock Sync aan te maken.
+# 1x per week — nieuwe producten verschijnen niet vaak.
+# Logt in op de partnerportal met VITALIZED_USER/VITALIZED_PASS (repo-Secrets).
+
+on:
+  schedule:
+    - cron: "0 4 * * 1"   # maandag 04:00 UTC
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Dependencies
+        run: pip install -r requirements.txt
+      - name: ADD-feed scraper
+        env:
+          VITALIZED_USER: ${{ secrets.VITALIZED_USER }}
+          VITALIZED_PASS: ${{ secrets.VITALIZED_PASS }}
+        run: python add_scraper.py
+      - name: Committen en pushen
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add vitalized_add_feed.xml
+          git diff --staged --quiet || git commit -m "🆕 Vitalized ADD-feed: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git pull --rebase origin main
+          git push
