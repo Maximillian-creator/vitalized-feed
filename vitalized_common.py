@@ -303,6 +303,32 @@ def extract_sections(html):
     return result
 
 
+def extract_short_description(html):
+    """
+    De 'product-detail-short-description' (Top benefits + intro) uit de pagina-body.
+    Consistent aanwezig en rijker/betrouwbaarder dan de JSON-LD description (die
+    soms leeg is). Behoudt een whitelist van basis-tags.
+    """
+    m = re.search(
+        r'product-detail-short-description[^>]*>\s*<span>(.*?)</span>', html, re.DOTALL
+    )
+    if not m:
+        return ""
+    b = m.group(1)
+    keep = {"p", "ul", "ol", "li", "strong", "b", "em", "br", "h3", "h4"}
+
+    def _tag(mo):
+        slash = "/" if mo.group(1) else ""
+        tag = mo.group(2).lower()
+        return f"<{slash}{tag}>" if tag in keep else ""
+
+    b = re.sub(r"<(/?)(\w+)[^>]*>", _tag, b)
+    b = re.sub(r"[ \t]+", " ", b)
+    b = re.sub(r"\s*\n\s*", "", b)
+    b = re.sub(r"<p>\s*</p>", "", b)
+    return b.strip()
+
+
 def extract_supplement_facts(html):
     """
     De supplement facts / ingrediënten (met hoeveelheid + %RI) staan in
@@ -342,6 +368,7 @@ def parse_product(html):
         "ean": extract_ean(html),
         "price": price,
         "availability": (offer.get("availability") or "").split("/")[-1],
+        "short_desc": extract_short_description(html),
         "description": clean_text(ld.get("description") or ""),
         "ingredients": extract_supplement_facts(html),
         "images": extract_images(html, ld.get("sku") or ld.get("mpn")),

@@ -33,16 +33,18 @@ def build_description_html(prod):
     bekende koppen op een nieuwe alinea voor leesbaarheid. Geen losse secties
     meer — die extractie werkte niet op deze Shopware-pagina's.
     """
+    parts = []
+    if prod.get("short_desc"):
+        parts.append(prod["short_desc"])          # Top benefits + intro (al HTML)
     desc = prod.get("description") or ""
-    if not desc:
-        return ""
-    html = escape(desc)
-    for h in ("Why it works:", "The science behind the product:", "How to use:"):
-        html = html.replace(escape(h), f"<br><br><strong>{escape(h)}</strong>")
-    out = f"<p>{html}</p>"
+    if desc:
+        html = escape(desc)
+        for h in ("Why it works:", "The science behind the product:", "How to use:"):
+            html = html.replace(escape(h), f"<br><br><strong>{escape(h)}</strong>")
+        parts.append(f"<p>{html}</p>")
     if prod.get("ingredients"):
-        out += f"\n<p><strong>Supplement facts:</strong> {escape(prod['ingredients'])}</p>"
-    return out
+        parts.append(f"<p><strong>Supplement facts:</strong> {escape(prod['ingredients'])}</p>")
+    return "\n".join(parts)
 
 
 def add_child(parent, tag, value):
