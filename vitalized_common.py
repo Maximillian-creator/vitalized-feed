@@ -303,6 +303,18 @@ def extract_sections(html):
     return result
 
 
+def extract_supplement_facts(html):
+    """
+    De supplement facts / ingrediënten (met hoeveelheid + %RI) staan in
+    <table class="table"> op de Vitalized-pagina. Pak de eerste.
+    """
+    m = re.search(r'<table class="table">.*?</table>', html, re.DOTALL)
+    if not m:
+        return ""
+    txt = clean_text(m.group(0))
+    return txt if len(txt) > 3 else ""
+
+
 def parse_product(html):
     """
     Rijke productinfo uit een Shopware-productpagina (werkt op beide sites).
@@ -331,7 +343,7 @@ def parse_product(html):
         "price": price,
         "availability": (offer.get("availability") or "").split("/")[-1],
         "description": clean_text(ld.get("description") or ""),
-        "sections": extract_sections(html),
+        "ingredients": extract_supplement_facts(html),
         "images": extract_images(html, ld.get("sku") or ld.get("mpn")),
     }
 

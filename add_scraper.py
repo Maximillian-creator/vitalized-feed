@@ -27,15 +27,22 @@ OUTPUT_FILE = "vitalized_add_feed.xml"
 
 
 def build_description_html(prod):
-    """body (JSON-LD description) + secties tot één HTML-beschrijving."""
-    parts = []
-    if prod.get("description"):
-        parts.append(f"<p>{escape(prod['description'])}</p>")
-    for heading in vc.SECTION_HEADINGS:
-        val = prod["sections"].get(heading)
-        if val:
-            parts.append(f"<p><strong>{escape(heading)}:</strong> {escape(val)}</p>")
-    return "\n".join(parts)
+    """
+    De JSON-LD `description` bevat al de volledige producttekst
+    (Health benefits / Why it works / The science / How to use). We zetten de
+    bekende koppen op een nieuwe alinea voor leesbaarheid. Geen losse secties
+    meer — die extractie werkte niet op deze Shopware-pagina's.
+    """
+    desc = prod.get("description") or ""
+    if not desc:
+        return ""
+    html = escape(desc)
+    for h in ("Why it works:", "The science behind the product:", "How to use:"):
+        html = html.replace(escape(h), f"<br><br><strong>{escape(h)}</strong>")
+    out = f"<p>{html}</p>"
+    if prod.get("ingredients"):
+        out += f"\n<p><strong>Supplement facts:</strong> {escape(prod['ingredients'])}</p>"
+    return out
 
 
 def add_child(parent, tag, value):
@@ -58,10 +65,7 @@ def build_xml(products):
         add_child(item, "available", "true" if p["available"] else "false")
         add_child(item, "quantity", p["stock"] if p["stock"] is not None else "")
         add_child(item, "description", build_description_html(p))
-        # losse secties (handig als aparte metafields)
-        for heading in vc.SECTION_HEADINGS:
-            tag = heading.lower().replace(" ", "_")
-            add_child(item, tag, p["sections"].get(heading, ""))
+        add_child(item, "ingredients", p.get("ingredients", ""))
         # afbeeldingen
         images_el = ET.SubElement(item, "images")
         for src in p["images"]:
