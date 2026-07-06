@@ -53,8 +53,7 @@ def main():
     print("🚀 Vitalized UPDATE-feed gestart\n")
     start = time.time()
 
-    session = vc.make_session()
-    vc.login(session)
+    session = vc.make_session()  # geen login nodig: partnerprijzen zijn openbaar (bruto)
 
     test_slug = os.environ.get("TEST_SLUG")
     slugs = [test_slug] if test_slug else vc.iter_product_slugs()

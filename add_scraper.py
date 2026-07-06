@@ -86,8 +86,7 @@ def main():
     print("🚀 Vitalized ADD-feed gestart\n")
     start = time.time()
 
-    session = vc.make_session()
-    vc.login(session)
+    session = vc.make_session()  # geen login nodig: partnerprijzen zijn openbaar (bruto)
 
     test_slug = os.environ.get("TEST_SLUG")
     is_test = bool(test_slug or os.environ.get("TEST_BRANDS"))

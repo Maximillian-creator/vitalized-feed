@@ -19,9 +19,6 @@ jobs:
       - name: Dependencies
         run: pip install -r requirements.txt
       - name: UPDATE-feed scraper
-        env:
-          VITALIZED_USER: ${{ secrets.VITALIZED_USER }}
-          VITALIZED_PASS: ${{ secrets.VITALIZED_PASS }}
         run: python scraper.py
       - name: Committen en pushen
         run: |

@@ -33,8 +33,6 @@ jobs:
         run: pip install -r requirements.txt
       - name: ADD-feed scraper
         env:
-          VITALIZED_USER: ${{ secrets.VITALIZED_USER }}
-          VITALIZED_PASS: ${{ secrets.VITALIZED_PASS }}
           TEST_BRANDS: ${{ inputs.test_brands }}
           TEST_PER_BRAND: ${{ inputs.test_per_brand }}
         run: python add_scraper.py

@@ -436,11 +436,13 @@ def scrape_products(session, slugs):
             skipped_nonproduct += 1
             continue
 
-        # Kostprijs = getoonde netto Partner price (ingelogd). Valt terug op
-        # JSON-LD / BTW (JSON-LD is bruto) als het element ontbreekt.
-        cost = extract_partner_price(phtml.text)
-        if cost is None and prod["price"] is not None:
-            cost = round(prod["price"] / VAT_RATE, 2)
+        # De partnersite toont iedereen (ook zonder login) de BRUTO partnerprijs
+        # (incl. BTW). Netto inkoop = bruto / BTW. Dit is consistent — de login
+        # gaf soms netto, soms bruto (flaky), dus die gebruiken we niet meer.
+        gross = extract_partner_price(phtml.text)
+        if gross is None:
+            gross = prod["price"]            # JSON-LD is ook bruto
+        cost = round(gross / VAT_RATE, 2) if gross is not None else None
         ship = parse_stock_shipping(phtml.text)
 
         if cost is None:
