@@ -24,6 +24,7 @@ import re
 import gzip
 import json
 import time
+import collections
 from html import unescape
 
 import requests
@@ -348,7 +349,23 @@ def scrape_products(session, slugs):
     skipped_no_cost = []
     skipped_nl_blocked = []
 
+    # Testmodus: alleen N producten per opgegeven merk (substring-match, bv.
+    # "quicksilver scientific" vangt ook "...europe"). TEST_BRANDS leeg = alles.
+    test_brands = [b.strip().lower() for b in os.environ.get("TEST_BRANDS", "").split(",") if b.strip()]
+    per_brand = int(os.environ.get("TEST_PER_BRAND", "7") or 7)
+    got = collections.Counter()
+
+    def wanted_brand(brand):
+        bl = (brand or "").lower()
+        for w in test_brands:
+            if w in bl:
+                return w
+        return None
+
     for i, slug in enumerate(slugs, 1):
+        if test_brands and all(got[w] >= per_brand for w in test_brands):
+            print("🧪 Testmodus: alle merk-quota gehaald, stoppen.")
+            break
         phtml = fetch(session, f"{PARTNER_BASE}/{slug}", allow_404=True)
         if not phtml:
             continue
@@ -370,6 +387,13 @@ def scrape_products(session, slugs):
             print(f"  [{i}/{total}] {prod['title'][:48]:48} 🚫 niet naar NL")
             time.sleep(REQUEST_DELAY)
             continue
+
+        if test_brands:
+            w = wanted_brand(prod["brand"])
+            if not w or got[w] >= per_brand:
+                time.sleep(REQUEST_DELAY)
+                continue
+            got[w] += 1
 
         price = selling_price(cost)
         print(f"  [{i}/{total}] {prod['title'][:48]:48} €{price} (inkoop €{cost}, {ship['stock']} vrd)")

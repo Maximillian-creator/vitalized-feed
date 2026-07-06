@@ -90,12 +90,14 @@ def main():
     vc.login(session)
 
     test_slug = os.environ.get("TEST_SLUG")
+    is_test = bool(test_slug or os.environ.get("TEST_BRANDS"))
     slugs = [test_slug] if test_slug else vc.iter_product_slugs()
     print(f"📦 {len(slugs)} slug(s) te verwerken\n")
 
     products = list(vc.scrape_products(session, slugs))
+    out = "vitalized_add_feed_TEST.xml" if is_test else OUTPUT_FILE
     root = build_xml(products)
-    save_xml(root, OUTPUT_FILE)
+    save_xml(root, out)
 
     print(f"⏱️  Klaar in {time.time() - start:.0f}s — {len(products)} producten in de feed")
     print("\n📋 Feed-URL voor Stock Sync (Add products):")

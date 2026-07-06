@@ -3,11 +3,23 @@ name: Vitalized ADD-feed Updater
 # Volledige productinfo om NIEUWE producten met Stock Sync aan te maken.
 # 1x per week — nieuwe producten verschijnen niet vaak.
 # Logt in op de partnerportal met VITALIZED_USER/VITALIZED_PASS (repo-Secrets).
+#
+# Handmatig draaien kan met een TESTMODUS: vul merken + aantal per merk in, dan
+# schrijft de run naar vitalized_add_feed_TEST.xml (raakt de echte feed niet).
 
 on:
   schedule:
     - cron: "0 4 * * 1"   # maandag 04:00 UTC
   workflow_dispatch:
+    inputs:
+      test_brands:
+        description: "Testmodus: merken (komma-gescheiden). Leeg = volledige feed."
+        required: false
+        default: ""
+      test_per_brand:
+        description: "Aantal producten per merk in testmodus"
+        required: false
+        default: "7"
 
 jobs:
   scrape:
@@ -23,12 +35,14 @@ jobs:
         env:
           VITALIZED_USER: ${{ secrets.VITALIZED_USER }}
           VITALIZED_PASS: ${{ secrets.VITALIZED_PASS }}
+          TEST_BRANDS: ${{ inputs.test_brands }}
+          TEST_PER_BRAND: ${{ inputs.test_per_brand }}
         run: python add_scraper.py
       - name: Committen en pushen
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add vitalized_add_feed.xml
+          git add vitalized_add_feed.xml vitalized_add_feed_TEST.xml 2>/dev/null || true
           git diff --staged --quiet || git commit -m "🆕 Vitalized ADD-feed: $(date -u '+%Y-%m-%d %H:%M UTC')"
           git pull --rebase origin main
           git push
