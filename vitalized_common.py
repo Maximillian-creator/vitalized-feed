@@ -136,19 +136,20 @@ NON_PRODUCT_SLUGS = {
 }
 
 
-def iter_product_slugs():
+def iter_product_slugs(base=PARTNER_BASE):
     """
-    Haal alle product-slugs uit de sitemap van vitalized.com.
+    Haal alle product-slugs uit de sitemap. Standaard de PARTNERSITE
+    (partners.vitalized.com) = het volledige inkoopbare assortiment (~366).
     Filtert grofweg content-pagina's eruit; de echte productcheck (JSON-LD)
     gebeurt tijdens het scrapen.
     """
     session = make_session()
-    idx = fetch(session, f"{CONSUMER_BASE}/sitemap.xml")
+    idx = fetch(session, f"{base}/sitemap.xml")
     if not idx:
         return []
     subs = re.findall(r"<loc>([^<]+)</loc>", idx.text)
     # alleen de hoofd-sitemap (niet de per-land varianten -mt-, -ie-)
-    subs = [s for s in subs if re.search(r"-vitalized-com-\d+\.xml", s)] or subs
+    subs = [s for s in subs if re.search(r"-com-\d+\.xml", s)] or subs
 
     slugs = []
     seen = set()
@@ -161,7 +162,7 @@ def iter_product_slugs():
             content = gzip.decompress(content)
         xml = content.decode("utf-8", "ignore")
         for loc in re.findall(r"<loc>([^<]+)</loc>", xml):
-            m = re.match(rf"{re.escape(CONSUMER_BASE)}/([a-z0-9][a-z0-9-]*)/?$", loc)
+            m = re.match(rf"{re.escape(base)}/([a-z0-9][a-z0-9-]*)/?$", loc)
             if not m:
                 continue
             slug = m.group(1)
@@ -176,6 +177,18 @@ def iter_product_slugs():
 # --------------------------------------------------------------------------- #
 # Parsing
 # --------------------------------------------------------------------------- #
+# "Life Extension" en "Life Extension Europe" samenvoegen tot één merk
+BRAND_ALIASES = {
+    "life extension europe": "Life Extension",
+}
+
+
+def normalize_brand(brand):
+    if not brand:
+        return ""
+    return BRAND_ALIASES.get(brand.strip().lower(), brand.strip())
+
+
 def clean_text(fragment):
     if not fragment:
         return ""
@@ -255,8 +268,13 @@ def extract_sections(html):
     return result
 
 
-def parse_consumer(html):
-    """Verkoopprijs + alle rijke productinfo van vitalized.com."""
+def parse_product(html):
+    """
+    Rijke productinfo uit een Shopware-productpagina (werkt op beide sites).
+    `price` = de JSON-LD offer-prijs OP DIE PAGINA:
+      - op de partnerpagina  = partner price (inkoop, excl. BTW)
+      - op de consumentensite = consumentenprijs (verkoop, incl. BTW)
+    """
     ld = _find_product_ld(html) or {}
     offers = ld.get("offers")
     offer = offers[0] if isinstance(offers, list) else (offers or {})
@@ -273,9 +291,9 @@ def parse_consumer(html):
     return {
         "title": ld.get("name") or "",
         "sku": ld.get("sku") or ld.get("mpn") or "",
-        "brand": brand or "",
+        "brand": normalize_brand(brand),
         "ean": extract_ean(html),
-        "price": price,                         # consumentenprijs, incl. BTW
+        "price": price,
         "availability": (offer.get("availability") or "").split("/")[-1],
         "description": clean_text(ld.get("description") or ""),
         "sections": extract_sections(html),
@@ -283,19 +301,8 @@ def parse_consumer(html):
     }
 
 
-def parse_partner(html):
-    """Inkoopprijs (partner price, excl. BTW) + echte voorraad."""
-    # Partnerprijs: JSON-LD offer.price op de partnerpagina
-    ld = _find_product_ld(html) or {}
-    offers = ld.get("offers")
-    offer = offers[0] if isinstance(offers, list) else (offers or {})
-    cost = offer.get("price")
-    try:
-        cost = round(float(cost), 2) if cost is not None else None
-    except (TypeError, ValueError):
-        cost = None
-
-    # Voorraad: "7098 in Stock"
+def parse_stock_shipping(html):
+    """Echte voorraad + NL-verzendbeperking van de partnerpagina."""
     stock = None
     m = re.search(r"([0-9][0-9.\s]*)\s*in\s*stock", html, re.IGNORECASE)
     if m:
@@ -305,62 +312,86 @@ def parse_partner(html):
             stock = None
     available = bool(stock) or "in stock" in html.lower()
 
-    # Verzendbeperking: sommige producten mogen NIET naar Nederland.
     # "This product cannot be shipped to following countries: ... Netherlands ..."
     block = re.search(
         r"cannot be shipped to (?:the )?following countries[:\s]*([^<]{0,300})",
         html, re.IGNORECASE,
     )
     nl_blocked = bool(block and re.search(r"netherland|nederland", block.group(1), re.IGNORECASE))
+    return {"stock": stock, "available": available, "nl_blocked": nl_blocked}
 
-    return {"cost": cost, "stock": stock, "available": available, "nl_blocked": nl_blocked}
+
+# Prijsstrategie voor producten ZONDER consumentenprijs (de ~184 US-producten).
+# MARKUP_FACTOR env var: bv. "2.5" -> verkoop = inkoop × 2,5 (incl. BTW).
+# Niet gezet -> verkoopprijs leeg (Stock Sync laat een bestaande prijs dan met rust).
+def _markup_factor():
+    v = os.environ.get("MARKUP_FACTOR")
+    try:
+        return float(v) if v else None
+    except ValueError:
+        return None
 
 
-def scrape_products(session, slugs, need_login=True):
+def scrape_products(session, slugs):
     """
-    Loop over slugs; combineer consumenten- en partnerdata.
-    Yield dicts met alle velden. Slaat producten zonder partnerprijs over
-    (niet inkoopbaar).
+    Enumereer het PARTNER-assortiment. Per product:
+      - partnerpagina (ingelogd) = titel/EAN/info/afbeeldingen + inkoop + voorraad
+      - consumentensite (openbaar) = verkoopprijs (incl. BTW) waar beschikbaar
+      - geen consumentenprijs -> MARKUP_FACTOR × inkoop, of leeg
+    Slaat over: geen inkoopprijs (niet inkoopbaar) en niet-NL-leverbaar.
     """
     total = len(slugs)
+    markup = _markup_factor()
     skipped_nonproduct = 0
-    skipped_nonpartner = []
+    skipped_no_cost = []
     skipped_nl_blocked = []
+    no_retail = 0
 
     for i, slug in enumerate(slugs, 1):
-        chtml = fetch(session, f"{CONSUMER_BASE}/{slug}", allow_404=True)
-        if not chtml:
+        phtml = fetch(session, f"{PARTNER_BASE}/{slug}", allow_404=True)
+        if not phtml:
             continue
-        cons = parse_consumer(chtml.text)
-        if not cons["title"] or cons["price"] is None:
+        prod = parse_product(phtml.text)          # price hier = INKOOP
+        if not prod["title"]:
             skipped_nonproduct += 1
             continue
 
-        # Partnerdata (inkoop + voorraad + verzendbeperking)
-        phtml = fetch(session, f"{PARTNER_BASE}/{slug}", allow_404=True)
-        part = parse_partner(phtml.text) if phtml else {
-            "cost": None, "stock": None, "available": False, "nl_blocked": False
-        }
+        cost = prod["price"]
+        ship = parse_stock_shipping(phtml.text)
 
-        if part["cost"] is None:
-            skipped_nonpartner.append(cons["title"])
-            print(f"  [{i}/{total}] {cons['title'][:50]:50} ⏭️  geen partnerprijs")
+        if cost is None:
+            skipped_no_cost.append(prod["title"])
+            print(f"  [{i}/{total}] {prod['title'][:48]:48} ⏭️  geen inkoopprijs")
+            time.sleep(REQUEST_DELAY)
+            continue
+        if ship["nl_blocked"]:
+            skipped_nl_blocked.append(prod["title"])
+            print(f"  [{i}/{total}] {prod['title'][:48]:48} 🚫 niet naar NL")
             time.sleep(REQUEST_DELAY)
             continue
 
-        if part.get("nl_blocked"):
-            skipped_nl_blocked.append(cons["title"])
-            print(f"  [{i}/{total}] {cons['title'][:50]:50} 🚫 niet naar NL — overgeslagen")
-            time.sleep(REQUEST_DELAY)
-            continue
+        # Verkoopprijs van de consumentensite (openbaar), zelfde slug
+        chtml = fetch(session, f"{CONSUMER_BASE}/{slug}", allow_404=True)
+        retail = parse_product(chtml.text)["price"] if chtml else None
+        if retail is None:
+            no_retail += 1
+            retail = round(cost * markup, 2) if markup else None
 
-        print(f"  [{i}/{total}] {cons['title'][:50]:50} €{cons['price']} (inkoop €{part['cost']}, {part['stock']} op voorraad)")
-        yield {**cons, **part, "slug": slug}
+        prijs_txt = f"€{retail}" if retail is not None else "(geen verkoopprijs)"
+        print(f"  [{i}/{total}] {prod['title'][:48]:48} {prijs_txt} (inkoop €{cost}, {ship['stock']} vrd)")
+
+        prod.update(ship)
+        prod["cost"] = cost
+        prod["price"] = retail          # verkoopprijs (kan None zijn)
+        prod["slug"] = slug
+        yield prod
         time.sleep(REQUEST_DELAY)
 
     print(f"\nℹ️  Overgeslagen: {skipped_nonproduct} niet-producten, "
-          f"{len(skipped_nonpartner)} zonder partnerprijs, "
-          f"{len(skipped_nl_blocked)} niet-leverbaar naar NL.")
+          f"{len(skipped_no_cost)} zonder inkoopprijs, "
+          f"{len(skipped_nl_blocked)} niet-NL. "
+          f"Zonder consumentenprijs: {no_retail} "
+          f"({'markup ×'+str(markup) if markup else 'prijs leeg gelaten'}).")
     if skipped_nl_blocked:
         print("🚫 Niet naar NL (uit feed gelaten):")
         for t in skipped_nl_blocked:

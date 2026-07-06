@@ -31,7 +31,7 @@ def build_xml(products):
             el.text = "" if value is None else str(value)
         add("sku", p["sku"])
         add("barcode", p["ean"])
-        add("price", f"{p['price']:.2f}")
+        add("price", f"{p['price']:.2f}" if p["price"] is not None else "")
         add("cost", f"{p['cost']:.2f}")
         add("available", "true" if p["available"] else "false")
         add("quantity", p["stock"] if p["stock"] is not None else "")

@@ -53,7 +53,7 @@ def build_xml(products):
         add_child(item, "vendor", p["brand"])
         add_child(item, "sku", p["sku"])
         add_child(item, "barcode", p["ean"])
-        add_child(item, "price", f"{p['price']:.2f}")          # verkoop, incl. BTW
+        add_child(item, "price", f"{p['price']:.2f}" if p["price"] is not None else "")  # verkoop, incl. BTW
         add_child(item, "cost", f"{p['cost']:.2f}")            # inkoop, excl. BTW
         add_child(item, "available", "true" if p["available"] else "false")
         add_child(item, "quantity", p["stock"] if p["stock"] is not None else "")
