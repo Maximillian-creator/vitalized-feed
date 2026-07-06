@@ -11,6 +11,8 @@ on:
 jobs:
   scrape:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # nodig om de feed-XML terug te committen/pushen
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
