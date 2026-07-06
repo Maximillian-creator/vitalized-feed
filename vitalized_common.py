@@ -398,6 +398,14 @@ def scrape_products(session, slugs):
     voorraad. Verkoopprijs = inkoop via marge + BTW (selling_price).
     Slaat over: geen inkoopprijs (niet inkoopbaar) en niet-NL-leverbaar.
     """
+    # US/EU-duplicaten: als zowel "X" (US) als "X-eu" (EU) bestaan, houd de
+    # EU-versie (compliant label voor de EU-webshop) en laat de US-versie vallen.
+    slugset = set(slugs)
+    dropped_us = [s for s in slugs if not s.endswith("-eu") and (s + "-eu") in slugset]
+    slugs = [s for s in slugs if s not in set(dropped_us)]
+    if dropped_us:
+        print(f"🔁 {len(dropped_us)} US-duplicaat(en) overgeslagen (EU-versie bestaat): {dropped_us}")
+
     total = len(slugs)
     skipped_nonproduct = 0
     skipped_no_cost = []
