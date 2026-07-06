@@ -166,7 +166,8 @@ def iter_product_slugs(base=PARTNER_BASE):
             content = gzip.decompress(content)
         xml = content.decode("utf-8", "ignore")
         for loc in re.findall(r"<loc>([^<]+)</loc>", xml):
-            m = re.match(rf"{re.escape(base)}/([a-z0-9][a-z0-9-]*)/?$", loc)
+            # Slugs kunnen punten/underscores bevatten (bv. "dr.-shade-s-bitters-no.9")
+            m = re.match(rf"{re.escape(base)}/([a-z0-9][a-z0-9._\-]*)/?$", loc)
             if not m:
                 continue
             slug = m.group(1)
