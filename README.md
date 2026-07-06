@@ -9,20 +9,21 @@ GitHub Secrets.
 | **Update-feed** | `scraper.py` | `vitalized_feed.xml` | prijs + voorraad + inkoop van **bestaande** producten | 2×/dag (06:00 + 18:00 UTC) |
 | **Add-feed** | `add_scraper.py` | `vitalized_add_feed.xml` | **nieuwe** producten aanmaken met álle info | 1×/week (ma 04:00 UTC) |
 
-## Twee bronnen
+## Bron
 
-Vitalized heeft twee sites met dezelfde producten (gematcht op URL-slug + EAN):
-
-1. **vitalized.com** (openbaar) → **verkoopprijs** (consumentenprijs, incl. BTW) +
-   titel, merk, SKU, EAN, secties, afbeeldingen. Enumeratie via de sitemap.
-2. **partners.vitalized.com** (login) → **inkoopprijs** (partner price, excl. BTW)
-   + echte voorraad.
+Enumeratie + data via **partners.vitalized.com** (Shopware, ingelogd) = het
+volledige inkoopbare assortiment (~366, alle merken). De partnerpagina levert
+titel, merk, SKU, EAN, secties, afbeeldingen, **inkoop (partner price)** en
+**echte voorraad**. (De partnerkorting op de inkoopprijs is alleen ingelogd zichtbaar.)
 
 ## Prijslogica
 
-- `price` = consumentenprijs van vitalized.com, **incl. BTW, 1-op-1** → Shopify verkoopprijs.
-- `cost`  = partner price (excl. BTW) → Shopify **"Kostprijs per artikel"**.
-- Geen BTW-berekening: verkoop komt al incl. BTW binnen, inkoop blijft excl. BTW.
+- `cost` = partner price (excl. BTW) → Shopify **"Kostprijs per artikel"**.
+- `price` = **verkoopprijs uit inkoop via marge + BTW** (zelf-onderhoudend):
+  `verkoop_excl = inkoop / (1 − MARGIN)`, `price = verkoop_excl × VAT_RATE`.
+- Defaults: **MARGIN = 0,31** (31% brutomarge), **VAT_RATE = 1,09** (9% BTW).
+  Instelbaar via env vars `MARGIN` / `VAT_RATE`.
+- Gecontroleerd: inkoop 14,31 → 22,61, gelijk aan Vitalized's eigen consumentenprijs (22,50).
 
 ## Automatische filters (uit de feed gelaten)
 

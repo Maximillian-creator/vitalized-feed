@@ -321,31 +321,32 @@ def parse_stock_shipping(html):
     return {"stock": stock, "available": available, "nl_blocked": nl_blocked}
 
 
-# Prijsstrategie voor producten ZONDER consumentenprijs (de ~184 US-producten).
-# MARKUP_FACTOR env var: bv. "2.5" -> verkoop = inkoop × 2,5 (incl. BTW).
-# Niet gezet -> verkoopprijs leeg (Stock Sync laat een bestaande prijs dan met rust).
-def _markup_factor():
-    v = os.environ.get("MARKUP_FACTOR")
-    try:
-        return float(v) if v else None
-    except ValueError:
+# Prijsberekening: verkoopprijs uit inkoop via marge + BTW.
+#   marge = brutomarge op verkoop excl. BTW  ->  verkoop_excl = inkoop / (1 - marge)
+#   verkoop_incl = verkoop_excl × BTW-factor
+# Gecontroleerd: inkoop 14,31 / 0,69 × 1,09 = 22,60 ≈ Vitalized's eigen prijs 22,50.
+# Instelbaar via env (MARGIN / VAT_RATE); default 31% marge en 9% BTW (supplementen).
+MARGIN = float(os.environ.get("MARGIN", "0.31"))
+VAT_RATE = float(os.environ.get("VAT_RATE", "1.09"))
+
+
+def selling_price(cost):
+    if cost is None:
         return None
+    return round(cost / (1 - MARGIN) * VAT_RATE, 2)
 
 
 def scrape_products(session, slugs):
     """
-    Enumereer het PARTNER-assortiment. Per product:
-      - partnerpagina (ingelogd) = titel/EAN/info/afbeeldingen + inkoop + voorraad
-      - consumentensite (openbaar) = verkoopprijs (incl. BTW) waar beschikbaar
-      - geen consumentenprijs -> MARKUP_FACTOR × inkoop, of leeg
+    Enumereer het PARTNER-assortiment (ingelogd). Per product levert de
+    partnerpagina: titel/EAN/merk/info/afbeeldingen + inkoop (partner price) +
+    voorraad. Verkoopprijs = inkoop via marge + BTW (selling_price).
     Slaat over: geen inkoopprijs (niet inkoopbaar) en niet-NL-leverbaar.
     """
     total = len(slugs)
-    markup = _markup_factor()
     skipped_nonproduct = 0
     skipped_no_cost = []
     skipped_nl_blocked = []
-    no_retail = 0
 
     for i, slug in enumerate(slugs, 1):
         phtml = fetch(session, f"{PARTNER_BASE}/{slug}", allow_404=True)
@@ -370,28 +371,21 @@ def scrape_products(session, slugs):
             time.sleep(REQUEST_DELAY)
             continue
 
-        # Verkoopprijs van de consumentensite (openbaar), zelfde slug
-        chtml = fetch(session, f"{CONSUMER_BASE}/{slug}", allow_404=True)
-        retail = parse_product(chtml.text)["price"] if chtml else None
-        if retail is None:
-            no_retail += 1
-            retail = round(cost * markup, 2) if markup else None
-
-        prijs_txt = f"€{retail}" if retail is not None else "(geen verkoopprijs)"
-        print(f"  [{i}/{total}] {prod['title'][:48]:48} {prijs_txt} (inkoop €{cost}, {ship['stock']} vrd)")
+        price = selling_price(cost)
+        print(f"  [{i}/{total}] {prod['title'][:48]:48} €{price} (inkoop €{cost}, {ship['stock']} vrd)")
 
         prod.update(ship)
         prod["cost"] = cost
-        prod["price"] = retail          # verkoopprijs (kan None zijn)
+        prod["price"] = price
         prod["slug"] = slug
         yield prod
         time.sleep(REQUEST_DELAY)
 
-    print(f"\nℹ️  Overgeslagen: {skipped_nonproduct} niet-producten, "
+    print(f"\nℹ️  {total - skipped_nonproduct - len(skipped_no_cost) - len(skipped_nl_blocked)} in feed | "
+          f"overgeslagen: {skipped_nonproduct} niet-producten, "
           f"{len(skipped_no_cost)} zonder inkoopprijs, "
-          f"{len(skipped_nl_blocked)} niet-NL. "
-          f"Zonder consumentenprijs: {no_retail} "
-          f"({'markup ×'+str(markup) if markup else 'prijs leeg gelaten'}).")
+          f"{len(skipped_nl_blocked)} niet-NL "
+          f"(marge {MARGIN:.0%}, BTW ×{VAT_RATE}).")
     if skipped_nl_blocked:
         print("🚫 Niet naar NL (uit feed gelaten):")
         for t in skipped_nl_blocked:
