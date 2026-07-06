@@ -242,6 +242,21 @@ def extract_partner_price(html):
     return None
 
 
+def extract_regular_price(html):
+    """
+    De 'Regular' consumentenprijs (product-normal-price, incl. BTW) op vitalized.com.
+    Bewust NIET de sale- of members-prijs. Valt terug op JSON-LD als het element ontbreekt.
+    """
+    m = re.search(
+        r'product-normal-price--price[^>]*>\s*€?\s*([0-9]+[.,][0-9]{2})',
+        html, re.IGNORECASE,
+    )
+    if m:
+        return round(float(m.group(1).replace(",", ".")), 2)
+    p = parse_product(html).get("price")
+    return p
+
+
 def extract_images(html, sku=None):
     """
     Product-afbeeldingen (Shopware media op b-cdn), lazy-load via data-src.
@@ -340,19 +355,40 @@ def parse_stock_shipping(html):
     return {"stock": stock, "available": available, "nl_blocked": nl_blocked}
 
 
-# Prijsberekening: verkoopprijs uit inkoop via marge + BTW.
-#   marge = brutomarge op verkoop excl. BTW  ->  verkoop_excl = inkoop / (1 - marge)
-#   verkoop_incl = verkoop_excl × BTW-factor
-# Gecontroleerd: inkoop 14,31 / 0,69 × 1,09 = 22,60 ≈ Vitalized's eigen prijs 22,50.
-# Instelbaar via env (MARGIN / VAT_RATE); default 31% marge en 9% BTW (supplementen).
-MARGIN = float(os.environ.get("MARGIN", "0.31"))
+# Prijsmodel:
+#   verkoopprijs = max( Vitalized's eigen consumentenprijs (waar die bestaat),
+#                       inkoop + merk-marge (vloer) )
+# - Waar Vitalized het product zelf verkoopt: neem hun Regular-prijs 1-op-1 over.
+# - Waar niet (US-producten): inkoop / (1 - merk-marge) × BTW.
+# - Vloer: nooit onder de merk-marge.
+# Merk-marges zijn onderzocht over de LE-feed (318 producten) + gecheckt tegen
+# Vitalized's eigen prijzen (Quicksilver ~40%, Life Extension ~30%).
 VAT_RATE = float(os.environ.get("VAT_RATE", "1.09"))
 
+BRAND_MARGINS = {
+    "quicksilver": 0.40,
+    "vitalized": 0.40,
+    "petzpark": 0.37,
+    "chewwies": 0.25,
+    "biosil": 0.30,
+    "life extension": 0.30,
+}
+DEFAULT_MARGIN = 0.30
 
-def selling_price(cost):
+
+def brand_margin(brand):
+    bl = (brand or "").lower()
+    for key, m in BRAND_MARGINS.items():
+        if key in bl:
+            return m
+    return DEFAULT_MARGIN
+
+
+def floor_price(cost, brand):
+    """Verkoopprijs incl. BTW bij de merk-marge (de vloer)."""
     if cost is None:
         return None
-    return round(cost / (1 - MARGIN) * VAT_RATE, 2)
+    return round(cost / (1 - brand_margin(brand)) * VAT_RATE, 2)
 
 
 def scrape_products(session, slugs):
@@ -417,8 +453,18 @@ def scrape_products(session, slugs):
                 continue
             got[w] += 1
 
-        price = selling_price(cost)
-        print(f"  [{i}/{total}] {prod['title'][:48]:48} €{price} (inkoop €{cost}, {ship['stock']} vrd)")
+        # Vitalized's eigen Regular-prijs (openbaar), zelfde slug — waar die bestaat.
+        chtml = fetch(session, f"{CONSUMER_BASE}/{slug}", allow_404=True)
+        retail = extract_regular_price(chtml.text) if chtml else None
+        floor = floor_price(cost, prod["brand"])
+        if retail is not None:
+            price = max(retail, floor)
+            bron = "Vitalized" if price == retail else f"vloer {brand_margin(prod['brand']):.0%}"
+        else:
+            price = floor
+            bron = f"vloer {brand_margin(prod['brand']):.0%}"
+
+        print(f"  [{i}/{total}] {prod['title'][:44]:44} €{price} ({bron}; inkoop €{cost}, {ship['stock']} vrd)")
 
         prod.update(ship)
         prod["cost"] = cost
@@ -430,8 +476,7 @@ def scrape_products(session, slugs):
     print(f"\nℹ️  {total - skipped_nonproduct - len(skipped_no_cost) - len(skipped_nl_blocked)} in feed | "
           f"overgeslagen: {skipped_nonproduct} niet-producten, "
           f"{len(skipped_no_cost)} zonder inkoopprijs, "
-          f"{len(skipped_nl_blocked)} niet-NL "
-          f"(marge {MARGIN:.0%}, BTW ×{VAT_RATE}).")
+          f"{len(skipped_nl_blocked)} niet-NL.")
     if skipped_nl_blocked:
         print("🚫 Niet naar NL (uit feed gelaten):")
         for t in skipped_nl_blocked:
