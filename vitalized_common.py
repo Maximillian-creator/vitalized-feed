@@ -227,6 +227,21 @@ def extract_ean(html):
     return m.group(1) if m else ""
 
 
+def extract_partner_price(html):
+    """
+    De getoonde "Partner price" (product-member-price) van de partnerpagina.
+    Ingelogd is dit de NETTO inkoopprijs (excl. BTW) — dus jouw echte kostprijs.
+    Betrouwbaarder dan JSON-LD (dat soms bruto = incl. BTW teruggeeft).
+    """
+    m = re.search(
+        r'product-member-price--price[^>]*>\s*€?\s*([0-9]+[.,][0-9]{2})',
+        html, re.IGNORECASE,
+    )
+    if m:
+        return round(float(m.group(1).replace(",", ".")), 2)
+    return None
+
+
 def extract_images(html, sku=None):
     """
     Product-afbeeldingen (Shopware media op b-cdn), lazy-load via data-src.
@@ -377,7 +392,11 @@ def scrape_products(session, slugs):
             skipped_nonproduct += 1
             continue
 
-        cost = prod["price"]
+        # Kostprijs = getoonde netto Partner price (ingelogd). Valt terug op
+        # JSON-LD / BTW (JSON-LD is bruto) als het element ontbreekt.
+        cost = extract_partner_price(phtml.text)
+        if cost is None and prod["price"] is not None:
+            cost = round(prod["price"] / VAT_RATE, 2)
         ship = parse_stock_shipping(phtml.text)
 
         if cost is None:
