@@ -95,8 +95,11 @@ def login(session):
     pw = os.environ.get("VITALIZED_PASS")
     if not user or not pw:
         raise SystemExit(
-            "❌ VITALIZED_USER / VITALIZED_PASS ontbreken. Zet ze als GitHub Secrets "
-            "(of env vars lokaal). Zie README."
+            "❌ Login-secrets ontbreken. Diagnose (waarden worden NIET getoond):\n"
+            f"   VITALIZED_USER gezet: {bool(user)} (lengte {len(user or '')})\n"
+            f"   VITALIZED_PASS gezet: {bool(pw)} (lengte {len(pw or '')})\n"
+            "   Zet beide als Repository-secret onder Settings -> Secrets and "
+            "variables -> Actions (tab 'Secrets'). Zie README."
         )
 
     login_url = f"{PARTNER_BASE}/account/login"
