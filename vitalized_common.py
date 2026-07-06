@@ -453,16 +453,16 @@ def scrape_products(session, slugs):
                 continue
             got[w] += 1
 
-        # Vitalized's eigen Regular-prijs (openbaar), zelfde slug — waar die bestaat.
+        # Vitalized's eigen Regular-prijs (openbaar) = de marktprijs. Neem die 1-op-1
+        # over waar hij bestaat. Zonder marktprijs (US-producten): merk-marge.
         chtml = fetch(session, f"{CONSUMER_BASE}/{slug}", allow_404=True)
         retail = extract_regular_price(chtml.text) if chtml else None
-        floor = floor_price(cost, prod["brand"])
         if retail is not None:
-            price = max(retail, floor)
-            bron = "Vitalized" if price == retail else f"vloer {brand_margin(prod['brand']):.0%}"
+            price = retail
+            bron = "markt"
         else:
-            price = floor
-            bron = f"vloer {brand_margin(prod['brand']):.0%}"
+            price = floor_price(cost, prod["brand"])
+            bron = f"merk-marge {brand_margin(prod['brand']):.0%}"
 
         print(f"  [{i}/{total}] {prod['title'][:44]:44} €{price} ({bron}; inkoop €{cost}, {ship['stock']} vrd)")
 
