@@ -101,9 +101,9 @@ def main():
 
     products = list(vc.scrape_products(session, slugs))
     out = "vitalized_add_feed_TEST.xml" if is_test else OUTPUT_FILE
-    if not is_test:
-        vc.controleer_omvang(len(products), OUTPUT_FILE, "<sku>")
     root = build_xml(products)
+    if not is_test:
+        vc.controleer_omvang(len(root.findall("product")), OUTPUT_FILE)
     save_xml(root, out)
 
     print(f"⏱️  Klaar in {time.time() - start:.0f}s — {len(products)} producten in de feed")

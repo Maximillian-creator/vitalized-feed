@@ -542,7 +542,7 @@ def scrape_products(session, slugs):
 # --------------------------------------------------------------------------- #
 # Vangnet: nooit stil een lege/gehalveerde feed wegschrijven
 # --------------------------------------------------------------------------- #
-def controleer_omvang(aantal, filepath, tag="<sku>"):
+def controleer_omvang(aantal, filepath, tag="<product>"):
     """
     Vergelijkt het aantal producten met wat er nu in de feed staat. Bij 0, of bij
     minder dan de helft van de vorige run, stopt de run met een foutcode zodat de

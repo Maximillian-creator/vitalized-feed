@@ -60,8 +60,8 @@ def main():
     print(f"📦 {len(slugs)} slug(s) te verwerken\n")
 
     products = list(vc.scrape_products(session, slugs))
-    vc.controleer_omvang(len(products), OUTPUT_FILE, "<sku>")
     root = build_xml(products)
+    vc.controleer_omvang(len(root.findall("product")), OUTPUT_FILE)
     save_xml(root, OUTPUT_FILE)
 
     print(f"⏱️  Klaar in {time.time() - start:.0f}s — {len(products)} producten in de feed")
