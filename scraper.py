@@ -60,6 +60,7 @@ def main():
     print(f"📦 {len(slugs)} slug(s) te verwerken\n")
 
     products = list(vc.scrape_products(session, slugs))
+    vc.controleer_omvang(len(products), OUTPUT_FILE, "<sku>")
     root = build_xml(products)
     save_xml(root, OUTPUT_FILE)
 

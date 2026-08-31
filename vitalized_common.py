@@ -29,8 +29,12 @@ from html import unescape
 
 import requests
 
-PARTNER_BASE = "https://partners.vitalized.com"
-CONSUMER_BASE = "https://vitalized.com"
+# Vitalized heet sinds 18-08-2026 Vuzimo; de oude domeinen redirecten (301) naar
+# de nieuwe. De sitemap gaf daardoor vuzimo-URL's terug die niet meer op de oude
+# base matchten -> 0 slugs -> lege feed. Vandaar: nieuwe domeinen als standaard,
+# overschrijfbaar via env voor het geval er nog eens verhuisd wordt.
+PARTNER_BASE = os.environ.get("PARTNER_BASE", "https://partners.vuzimo.com").rstrip("/")
+CONSUMER_BASE = os.environ.get("CONSUMER_BASE", "https://vuzimo.com").rstrip("/")
 REQUEST_DELAY = 0.6
 
 HEADERS = {
@@ -91,8 +95,8 @@ def login(session):
     Flow: GET /account/login (sessie-cookie) → POST username/password.
     Geeft True bij succes. Geen 2FA/CSRF op dit formulier (gecontroleerd).
     """
-    user = os.environ.get("VITALIZED_USER")
-    pw = os.environ.get("VITALIZED_PASS")
+    user = os.environ.get("VUZIMO_USER") or os.environ.get("VITALIZED_USER")
+    pw = os.environ.get("VUZIMO_PASS") or os.environ.get("VITALIZED_PASS")
     if not user or not pw:
         raise SystemExit(
             "❌ Login-secrets ontbreken. Diagnose (waarden worden NIET getoond):\n"
@@ -408,6 +412,8 @@ VAT_RATE = float(os.environ.get("VAT_RATE", "1.09"))
 BRAND_MARGINS = {
     "quicksilver": 0.40,
     "vitalized": 0.40,
+    "vuzimo": 0.40,
+    "vuzïmo": 0.40,
     "petzpark": 0.37,
     "chewwies": 0.25,
     "biosil": 0.30,
@@ -531,3 +537,32 @@ def scrape_products(session, slugs):
         print("🚫 Niet naar NL (uit feed gelaten):")
         for t in skipped_nl_blocked:
             print(f"     - {t}")
+
+
+# --------------------------------------------------------------------------- #
+# Vangnet: nooit stil een lege/gehalveerde feed wegschrijven
+# --------------------------------------------------------------------------- #
+def controleer_omvang(aantal, filepath, tag="<sku>"):
+    """
+    Vergelijkt het aantal producten met wat er nu in de feed staat. Bij 0, of bij
+    minder dan de helft van de vorige run, stopt de run met een foutcode zodat de
+    GitHub Action rood wordt in plaats van Stock Sync een lege feed te voeren.
+    Overrulen kan bewust met FORCE_FEED=1 (bv. als de leverancier echt inkrimpt).
+    """
+    vorig = 0
+    if os.path.exists(filepath):
+        with open(filepath, encoding="utf-8") as f:
+            vorig = f.read().count(tag)
+    print(f"🧮 {aantal} producten nu, {vorig} in de vorige feed")
+    if os.environ.get("FORCE_FEED") == "1":
+        return
+    if aantal == 0:
+        raise SystemExit(
+            "❌ 0 producten gevonden - feed NIET overschreven. "
+            "Meestal een verhuisd domein of gewijzigde sitemap (zie PARTNER_BASE)."
+        )
+    if vorig and aantal < vorig * 0.5:
+        raise SystemExit(
+            f"❌ Slechts {aantal} van de {vorig} producten gevonden (<50%) - "
+            "feed NIET overschreven. Controleer de bron; forceren kan met FORCE_FEED=1."
+        )
