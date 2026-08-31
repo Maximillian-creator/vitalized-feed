@@ -1,6 +1,10 @@
-# Vitalized feeds → Stock Sync
+# Vuzïmo (voorheen Vitalized) feeds → Stock Sync
 
-Scrapt **Vitalized** (Shopware) en levert twee XML-feeds voor Stock Sync. Draait
+> **18-08-2026:** Vitalized heet Vuzïmo; `vitalized.com` en `partners.vuzimo.com`
+> redirecten naar `vuzimo.com` / `partners.vuzimo.com`. De SKU's van de eigen lijn
+> gingen van 400xx naar 401xx (oud + 100), met nieuwe EAN's. De repo houdt zijn naam.
+
+Scrapt **Vuzïmo** (Shopware) en levert twee XML-feeds voor Stock Sync. Draait
 automatisch via GitHub Actions; logt in op het partnerportaal met versleutelde
 GitHub Secrets.
 
@@ -11,7 +15,7 @@ GitHub Secrets.
 
 ## Bron
 
-Enumeratie + data via **partners.vitalized.com** (Shopware, ingelogd) = het
+Enumeratie + data via **partners.vuzimo.com** (Shopware, ingelogd) = het
 volledige inkoopbare assortiment (~366, alle merken). De partnerpagina levert
 titel, merk, SKU, EAN, secties, afbeeldingen, **inkoop (partner price)** en
 **echte voorraad**. (De partnerkorting op de inkoopprijs is alleen ingelogd zichtbaar.)
@@ -25,6 +29,15 @@ titel, merk, SKU, EAN, secties, afbeeldingen, **inkoop (partner price)** en
   Instelbaar via env vars `MARGIN` / `VAT_RATE`.
 - Gecontroleerd: inkoop 14,31 → 22,61, gelijk aan Vitalized's eigen consumentenprijs (22,50).
 
+## Vangnet tegen een lege feed
+
+Beide scrapers roepen `controleer_omvang()` aan vóór het wegschrijven. Bij **0
+producten**, of bij **minder dan de helft** van de vorige feed, stopt de run met een
+foutcode: de oude feed blijft staan en de GitHub Action wordt rood. Zo kan een
+verhuisd domein of een gewijzigde sitemap niet meer stil een lege feed opleveren
+(dat gebeurde op 18-08-2026 en bleef 13 dagen onopgemerkt). Bewust doorzetten —
+als de leverancier écht inkrimpt — kan met `FORCE_FEED=1`.
+
 ## Automatische filters (uit de feed gelaten)
 
 - Producten **zonder partnerprijs** (niet inkoopbaar).
@@ -35,8 +48,8 @@ titel, merk, SKU, EAN, secties, afbeeldingen, **inkoop (partner price)** en
 
 Zet in de repo onder **Settings → Secrets and variables → Actions**:
 
-- `VITALIZED_USER` = je partner-login e-mail
-- `VITALIZED_PASS` = je partner-wachtwoord
+- `VITALIZED_USER` = je partner-login e-mail (`VUZIMO_USER` mag ook)
+- `VITALIZED_PASS` = je partner-wachtwoord (`VUZIMO_PASS` mag ook)
 
 Zonder deze secrets kan de Action niet inloggen en stopt hij met een duidelijke melding.
 
