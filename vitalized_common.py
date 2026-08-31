@@ -67,8 +67,15 @@ def make_session():
     return s
 
 
-def fetch(session, url, retries=3, allow_404=False):
-    """GET met retry. Bij 404 (en allow_404) → None teruggeven zonder herhalen."""
+def fetch(session, url, retries=3, allow_404=False, verplicht=False):
+    """GET met retry. Bij 404 (en allow_404) → None teruggeven zonder herhalen.
+
+    `verplicht=True`: een pagina die na alle pogingen niet komt is een FOUT, geen
+    stilzwijgend None. Stock Sync archiveert alles wat niet in de feed staat; een
+    stil overgeslagen product verdwijnt dus uit de winkel. Gemeten over juni-aug
+    2026: 26 van de 90 gezonde runs lieten SKU's vallen die er de run erna weer
+    in stonden — knipperen, geen uitlisting. Een echte 404 blijft None.
+    """
     for attempt in range(retries):
         try:
             r = session.get(url, timeout=20)
@@ -86,6 +93,12 @@ def fetch(session, url, retries=3, allow_404=False):
                 time.sleep(wait)
             else:
                 print(f"    ❌ Mislukt na {retries} pogingen: {url} ({e})")
+                if verplicht:
+                    raise RuntimeError(
+                        f"{url} kwam na {retries} pogingen niet binnen ({e}). "
+                        "De run stopt: een halve feed wegschrijven laat Stock Sync "
+                        "de rest archiveren."
+                    )
                 return None
 
 
@@ -152,9 +165,8 @@ def iter_product_slugs(base=PARTNER_BASE):
     gebeurt tijdens het scrapen.
     """
     session = make_session()
-    idx = fetch(session, f"{base}/sitemap.xml")
-    if not idx:
-        return []
+    # Verplicht: gaf dit [] terug, dan volgde er een lege feed.
+    idx = fetch(session, f"{base}/sitemap.xml", verplicht=True)
     subs = re.findall(r"<loc>([^<]+)</loc>", idx.text)
     # alleen de hoofd-sitemap (niet de per-land varianten -mt-, -ie-)
     subs = [s for s in subs if re.search(r"-com-\d+\.xml", s)] or subs
@@ -162,9 +174,7 @@ def iter_product_slugs(base=PARTNER_BASE):
     slugs = []
     seen = set()
     for sub in subs:
-        raw = fetch(session, sub)
-        if not raw:
-            continue
+        raw = fetch(session, sub, verplicht=True)
         content = raw.content
         if sub.endswith(".gz"):
             content = gzip.decompress(content)
@@ -474,7 +484,7 @@ def scrape_products(session, slugs):
         if test_brands and all(got[w] >= per_brand for w in test_brands):
             print("🧪 Testmodus: alle merk-quota gehaald, stoppen.")
             break
-        phtml = fetch(session, f"{PARTNER_BASE}/{slug}", allow_404=True)
+        phtml = fetch(session, f"{PARTNER_BASE}/{slug}", allow_404=True, verplicht=True)
         if not phtml:
             continue
         prod = parse_product(phtml.text)          # price hier = INKOOP
