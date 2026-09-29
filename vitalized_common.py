@@ -176,7 +176,11 @@ def iter_product_slugs(base=PARTNER_BASE):
     for sub in subs:
         raw = fetch(session, sub, verplicht=True)
         content = raw.content
-        if sub.endswith(".gz"):
+        # Niet op de bestandsnaam afgaan: sinds begin september 2026 serveert de
+        # server de .xml.gz met 'Content-Encoding: gzip', waardoor requests hem al
+        # uitpakt. Dubbel uitpakken gaf BadGzipFile en liet de Action 3 weken falen.
+        # Alleen uitpakken als het nog echt gzip is (magic bytes 1f 8b).
+        if content[:2] == b"\x1f\x8b":
             content = gzip.decompress(content)
         xml = content.decode("utf-8", "ignore")
         for loc in re.findall(r"<loc>([^<]+)</loc>", xml):
@@ -247,12 +251,19 @@ def extract_partner_price(html):
     De getoonde "Partner price" (product-member-price) van de partnerpagina.
     Ingelogd is dit de NETTO inkoopprijs (excl. BTW) — dus jouw echte kostprijs.
     Betrouwbaarder dan JSON-LD (dat soms bruto = incl. BTW teruggeeft).
+
+    Sinds september 2026 staat bij producten met korte-THT-voorraad een verborgen
+    blok 'low-expiration-top-price' ("Short expiration", -30%) vóór de gewone
+    prijs. Dat is een partij, niet de inkoopprijs: overslaan. Staat er daarna geen
+    gewone partnerprijs, dan None en valt de aanroeper terug op JSON-LD (= Regular).
     """
-    m = re.search(
+    for m in re.finditer(
         r'product-member-price--price[^>]*>\s*€?\s*([0-9]+[.,][0-9]{2})',
         html, re.IGNORECASE,
-    )
-    if m:
+    ):
+        blok = html.rfind("product-detail-price-container", 0, m.start())
+        if blok != -1 and "low-expiration" in html[blok:blok + 80]:
+            continue
         return round(float(m.group(1).replace(",", ".")), 2)
     return None
 

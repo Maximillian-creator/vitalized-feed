@@ -38,6 +38,18 @@ verhuisd domein of een gewijzigde sitemap niet meer stil een lege feed opleveren
 (dat gebeurde op 18-08-2026 en bleef 13 dagen onopgemerkt). Bewust doorzetten —
 als de leverancier écht inkrimpt — kan met `FORCE_FEED=1`.
 
+Keerzijde: een rode Action houdt de feed wel veilig, maar bevriest hem ook. Van
+07-09 tot 29-09-2026 faalde elke run met `BadGzipFile`: de server stuurt de
+`.xml.gz`-sitemaps sindsdien met `Content-Encoding: gzip`, requests pakt ze zelf al
+uit en de scraper deed het daarna nog eens. Nu wordt alleen uitgepakt als de bytes
+echt gzip zijn. Prijzen en voorraad stonden die drie weken stil in Stock Sync.
+
+In dezelfde periode kwam er op de partnerpagina een verborgen blok "Short
+expiration" bij (korte-THT-partij, −30%). Dat staat vóór de gewone partnerprijs; de
+scraper nam het als inkoop, en bij producten zonder consumentenprijs zakte daardoor
+ook de verkoopprijs 30% (Extraordinary Enzymes € 27,86 → € 19,50). Dat blok wordt
+nu overgeslagen.
+
 ## Automatische filters (uit de feed gelaten)
 
 - Producten **zonder partnerprijs** (niet inkoopbaar).
