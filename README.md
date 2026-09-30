@@ -50,6 +50,18 @@ scraper nam het als inkoop, en bij producten zonder consumentenprijs zakte daard
 ook de verkoopprijs 30% (Extraordinary Enzymes € 27,86 → € 19,50). Dat blok wordt
 nu overgeslagen.
 
+## Prijsvloer: de update-feed verlaagt nooit een verkoopprijs
+
+Besluit Max, 30-09-2026. `prijsvloer()` in `scraper.py` houdt elke verkoopprijs op
+minstens de prijs uit de vorige feed (= wat Stock Sync in de winkel zette). Verhogen
+gaat gewoon door; de inkoopprijs volgt altijd de bron. Aanleiding: Vuzïmo en Life
+Extension Europe verlaagden in september drie Quicksilver EU-producten met ~11%.
+
+Een verlaging bewust doorlaten kan per SKU met de env-var `PRIJS_OMLAAG=<sku>,<sku>`
+(of `PRIJS_OMLAAG=alle`). Let op: een foute, te hoge prijs blijft zo ook staan tot
+hij op die manier wordt vrijgegeven. De add-feed heeft geen vloer; die zet alleen
+prijzen van nieuwe producten.
+
 ## Automatische filters (uit de feed gelaten)
 
 - Producten **zonder partnerprijs** (niet inkoopbaar).
