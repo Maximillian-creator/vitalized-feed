@@ -7,6 +7,11 @@ on:
   schedule:
     - cron: "0 6,18 * * *"   # 06:00 en 18:00 UTC
   workflow_dispatch:
+  # Een codewijziging draait meteen één keer (05-10: de beschikbaarheidsreparatie moest
+  # direct live). De bot-commits raken alleen de xml en starten geen nieuwe run.
+  push:
+    branches: [main]
+    paths: ["scraper.py", "vitalized_common.py"]
 
 jobs:
   scrape:

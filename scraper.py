@@ -93,6 +93,14 @@ def main():
     prijsvloer(products, OUTPUT_FILE)
     root = build_xml(products)
     vc.controleer_omvang(len(root.findall("product")), OUTPUT_FILE)
+    # Rem op de beschikbaarheid (05-10): normaal is ~8% uitverkocht (30 van 368). Is het
+    # ineens meer dan 30%, dan klopt het lezen waarschijnlijk niet; liever de vorige feed
+    # laten staan dan Stock Sync alles op uitverkocht te laten zetten. FORCE_FEED=1 overrulet.
+    niet = sum(1 for p in products if not p["available"])
+    print(f"🧮 {niet} van {len(products)} uitverkocht")
+    if products and niet > 0.30 * len(products) and os.environ.get("FORCE_FEED") != "1":
+        raise SystemExit(f"❌ {niet} van {len(products)} zouden uitverkocht worden (>30%) - feed NIET "
+                         "overschreven. Controleer de bron; forceren kan met FORCE_FEED=1.")
     save_xml(root, OUTPUT_FILE)
 
     print(f"⏱️  Klaar in {time.time() - start:.0f}s — {len(products)} producten in de feed")

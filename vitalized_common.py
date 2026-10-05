@@ -400,8 +400,19 @@ def parse_product(html):
     }
 
 
+_LD_BESCHIKBAAR = re.compile(r'"availability"\s*:\s*"(?:https?:\\?/\\?/schema\.org\\?/)?(\w+)"')
+LEVERBAAR = {"InStock", "LimitedAvailability", "OnlineOnly", "InStoreOnly"}
+
+
 def parse_stock_shipping(html):
-    """Echte voorraad + NL-verzendbeperking van de partnerpagina."""
+    """Echte voorraad + NL-verzendbeperking van de partnerpagina.
+
+    Beschikbaar komt uit de schema.org-gegevens van de pagina (InStock / SoldOut).
+    Tot 05-10 was het `"in stock" in html`, en die tekst staat op ELKE pagina in de
+    verborgen 'houd mij op de hoogte'-melding ("...notified when the product is in
+    stock again"). Daardoor stonden alle producten op leverbaar, ook uitverkochte
+    (Life Extension Enhanced Zinc Lozenges: 7 open orders, 16 stuks, 28-09 t/m 05-10).
+    """
     stock = None
     m = re.search(r"([0-9][0-9.\s]*)\s*in\s*stock", html, re.IGNORECASE)
     if m:
@@ -409,7 +420,13 @@ def parse_stock_shipping(html):
             stock = int(re.sub(r"[^\d]", "", m.group(1)))
         except ValueError:
             stock = None
-    available = bool(stock) or "in stock" in html.lower()
+    ld = _LD_BESCHIKBAAR.findall(html)
+    if ld:
+        available = ld[0] in LEVERBAAR
+    else:
+        # zonder gestructureerde data telt alleen een getal ("12 in stock"), en nooit
+        # als de pagina het uitverkocht-blok toont
+        available = bool(stock) and not re.search(r"out-of-stock-container|>\s*out of stock\s*<", html, re.I)
 
     # "This product cannot be shipped to following countries: ... Netherlands ..."
     block = re.search(
