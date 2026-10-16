@@ -6,7 +6,7 @@
     <price>16.47</price>
     <cost>10.58</cost>
     <available>true</available>
-    <quantity>46</quantity>
+    <quantity>44</quantity>
   </product>
   <product>
     <sku>01253</sku>
@@ -14,7 +14,7 @@
     <price>21.01</price>
     <cost>13.49</cost>
     <available>true</available>
-    <quantity>49</quantity>
+    <quantity>48</quantity>
   </product>
   <product>
     <sku>00141</sku>
@@ -54,7 +54,7 @@
     <price>17.20</price>
     <cost>10.95</cost>
     <available>true</available>
-    <quantity>536</quantity>
+    <quantity>526</quantity>
   </product>
   <product>
     <sku>01541</sku>
@@ -62,7 +62,7 @@
     <price>25.46</price>
     <cost>16.19</cost>
     <available>true</available>
-    <quantity>37</quantity>
+    <quantity>27</quantity>
   </product>
   <product>
     <sku>01624</sku>
@@ -78,7 +78,7 @@
     <price>19.50</price>
     <cost>12.39</cost>
     <available>true</available>
-    <quantity>394</quantity>
+    <quantity>384</quantity>
   </product>
   <product>
     <sku>01671</sku>
@@ -126,7 +126,7 @@
     <price>56.60</price>
     <cost>36.02</cost>
     <available>true</available>
-    <quantity>196</quantity>
+    <quantity>185</quantity>
   </product>
   <product>
     <sku>01438</sku>
@@ -166,7 +166,7 @@
     <price>30.61</price>
     <cost>19.66</cost>
     <available>true</available>
-    <quantity>28</quantity>
+    <quantity>27</quantity>
   </product>
   <product>
     <sku>00965</sku>
@@ -190,7 +190,7 @@
     <price>42.32</price>
     <cost>25.05</cost>
     <available>true</available>
-    <quantity>857</quantity>
+    <quantity>791</quantity>
   </product>
   <product>
     <sku>00888</sku>
@@ -222,7 +222,7 @@
     <price>40.50</price>
     <cost>25.86</cost>
     <available>true</available>
-    <quantity>147</quantity>
+    <quantity>146</quantity>
   </product>
   <product>
     <sku>01676</sku>
@@ -254,7 +254,7 @@
     <price>21.95</price>
     <cost>13.96</cost>
     <available>true</available>
-    <quantity>22</quantity>
+    <quantity>21</quantity>
   </product>
   <product>
     <sku>01706</sku>
@@ -270,7 +270,7 @@
     <price>37.93</price>
     <cost>24.36</cost>
     <available>true</available>
-    <quantity>29</quantity>
+    <quantity>26</quantity>
   </product>
   <product>
     <sku>01514</sku>
@@ -278,7 +278,7 @@
     <price>37.90</price>
     <cost>24.13</cost>
     <available>true</available>
-    <quantity>69</quantity>
+    <quantity>67</quantity>
   </product>
   <product>
     <sku>00972</sku>
@@ -318,7 +318,7 @@
     <price>14.20</price>
     <cost>9.05</cost>
     <available>true</available>
-    <quantity>122</quantity>
+    <quantity>120</quantity>
   </product>
   <product>
     <sku>01544</sku>
@@ -350,7 +350,7 @@
     <price>36.70</price>
     <cost>23.36</cost>
     <available>true</available>
-    <quantity>170</quantity>
+    <quantity>146</quantity>
   </product>
   <product>
     <sku>00889</sku>
@@ -358,7 +358,7 @@
     <price>19.50</price>
     <cost>12.42</cost>
     <available>true</available>
-    <quantity>92</quantity>
+    <quantity>91</quantity>
   </product>
   <product>
     <sku>00408</sku>
@@ -382,7 +382,7 @@
     <price>8.86</price>
     <cost>5.69</cost>
     <available>true</available>
-    <quantity>175</quantity>
+    <quantity>139</quantity>
   </product>
   <product>
     <sku>01788</sku>
@@ -390,7 +390,7 @@
     <price>11.32</price>
     <cost>7.27</cost>
     <available>true</available>
-    <quantity>199</quantity>
+    <quantity>197</quantity>
   </product>
   <product>
     <sku>01513</sku>
@@ -462,7 +462,7 @@
     <price>19.79</price>
     <cost>12.71</cost>
     <available>true</available>
-    <quantity>33</quantity>
+    <quantity>28</quantity>
   </product>
   <product>
     <sku>01522</sku>
@@ -486,7 +486,7 @@
     <price>16.20</price>
     <cost>10.33</cost>
     <available>true</available>
-    <quantity>72</quantity>
+    <quantity>61</quantity>
   </product>
   <product>
     <sku>01561</sku>
@@ -526,7 +526,7 @@
     <price>25.00</price>
     <cost>15.92</cost>
     <available>true</available>
-    <quantity>218</quantity>
+    <quantity>217</quantity>
   </product>
   <product>
     <sku>01778</sku>
@@ -542,7 +542,7 @@
     <price>38.62</price>
     <cost>24.80</cost>
     <available>true</available>
-    <quantity>14</quantity>
+    <quantity>12</quantity>
   </product>
   <product>
     <sku>00987</sku>
@@ -574,7 +574,7 @@
     <price>38.55</price>
     <cost>24.76</cost>
     <available>true</available>
-    <quantity>48</quantity>
+    <quantity>44</quantity>
   </product>
   <product>
     <sku>00455</sku>
@@ -638,7 +638,7 @@
     <price>40.73</price>
     <cost>26.16</cost>
     <available>true</available>
-    <quantity>32</quantity>
+    <quantity>31</quantity>
   </product>
   <product>
     <sku>01805</sku>
@@ -654,7 +654,7 @@
     <price>9.85</price>
     <cost>8.27</cost>
     <available>true</available>
-    <quantity>485</quantity>
+    <quantity>484</quantity>
   </product>
   <product>
     <sku>01400</sku>
@@ -694,7 +694,7 @@
     <price>21.74</price>
     <cost>13.96</cost>
     <available>true</available>
-    <quantity>33</quantity>
+    <quantity>32</quantity>
   </product>
   <product>
     <sku>01683</sku>
@@ -758,7 +758,7 @@
     <price>13.03</price>
     <cost>8.37</cost>
     <available>true</available>
-    <quantity>8</quantity>
+    <quantity>16</quantity>
   </product>
   <product>
     <sku>01900</sku>
@@ -774,7 +774,7 @@
     <price>30.30</price>
     <cost>19.29</cost>
     <available>true</available>
-    <quantity>56</quantity>
+    <quantity>55</quantity>
   </product>
   <product>
     <sku>01910</sku>
@@ -806,7 +806,7 @@
     <price>14.10</price>
     <cost>8.98</cost>
     <available>true</available>
-    <quantity>32</quantity>
+    <quantity>28</quantity>
   </product>
   <product>
     <sku>01988</sku>
@@ -830,7 +830,7 @@
     <price>49.00</price>
     <cost>31.18</cost>
     <available>true</available>
-    <quantity>37</quantity>
+    <quantity>34</quantity>
   </product>
   <product>
     <sku>02006</sku>
@@ -878,7 +878,7 @@
     <price>47.90</price>
     <cost>30.46</cost>
     <available>true</available>
-    <quantity>78</quantity>
+    <quantity>53</quantity>
   </product>
   <product>
     <sku>01842</sku>
@@ -894,7 +894,7 @@
     <price>32.97</price>
     <cost>20.96</cost>
     <available>true</available>
-    <quantity>21</quantity>
+    <quantity>17</quantity>
   </product>
   <product>
     <sku>01925</sku>
@@ -902,7 +902,7 @@
     <price>46.50</price>
     <cost>29.72</cost>
     <available>true</available>
-    <quantity>37</quantity>
+    <quantity>36</quantity>
   </product>
   <product>
     <sku>01953</sku>
@@ -910,7 +910,7 @@
     <price>30.18</price>
     <cost>19.38</cost>
     <available>true</available>
-    <quantity>16</quantity>
+    <quantity>12</quantity>
   </product>
   <product>
     <sku>01884</sku>
@@ -982,7 +982,7 @@
     <price>43.40</price>
     <cost>27.61</cost>
     <available>true</available>
-    <quantity>103</quantity>
+    <quantity>101</quantity>
   </product>
   <product>
     <sku>02023</sku>
@@ -998,7 +998,7 @@
     <price>34.94</price>
     <cost>22.44</cost>
     <available>true</available>
-    <quantity>53</quantity>
+    <quantity>51</quantity>
   </product>
   <product>
     <sku>01009</sku>
@@ -1046,7 +1046,7 @@
     <price>58.40</price>
     <cost>31.89</cost>
     <available>true</available>
-    <quantity>87</quantity>
+    <quantity>86</quantity>
   </product>
   <product>
     <sku>60005</sku>
@@ -1062,7 +1062,7 @@
     <price>63.15</price>
     <cost>34.76</cost>
     <available>true</available>
-    <quantity>55</quantity>
+    <quantity>51</quantity>
   </product>
   <product>
     <sku>02102</sku>
@@ -1078,7 +1078,7 @@
     <price>57.40</price>
     <cost>31.31</cost>
     <available>true</available>
-    <quantity>156</quantity>
+    <quantity>155</quantity>
   </product>
   <product>
     <sku>02028</sku>
@@ -1118,7 +1118,7 @@
     <price>43.31</price>
     <cost>25.63</cost>
     <available>true</available>
-    <quantity>73</quantity>
+    <quantity>69</quantity>
   </product>
   <product>
     <sku>02127</sku>
@@ -1166,7 +1166,7 @@
     <price>51.40</price>
     <cost>28.04</cost>
     <available>true</available>
-    <quantity>48</quantity>
+    <quantity>47</quantity>
   </product>
   <product>
     <sku>02171</sku>
@@ -1177,12 +1177,12 @@
     <quantity>4</quantity>
   </product>
   <product>
-    <sku>01431</sku>
-    <barcode>737870143123</barcode>
-    <price>56.50</price>
-    <cost>35.96</cost>
+    <sku>01437</sku>
+    <barcode>0737870143734</barcode>
+    <price>31.40</price>
+    <cost>20.02</cost>
     <available>true</available>
-    <quantity>239</quantity>
+    <quantity>27</quantity>
   </product>
   <product>
     <sku>01963</sku>
@@ -1190,7 +1190,7 @@
     <price>24.74</price>
     <cost>15.89</cost>
     <available>true</available>
-    <quantity>30</quantity>
+    <quantity>29</quantity>
   </product>
   <product>
     <sku>02208</sku>
@@ -1206,7 +1206,7 @@
     <price>13.02</price>
     <cost>8.36</cost>
     <available>true</available>
-    <quantity>32</quantity>
+    <quantity>31</quantity>
   </product>
   <product>
     <sku>60018</sku>
@@ -1270,7 +1270,7 @@
     <price>94.80</price>
     <cost>51.71</cost>
     <available>true</available>
-    <quantity>92</quantity>
+    <quantity>91</quantity>
   </product>
   <product>
     <sku>02232</sku>
@@ -1358,7 +1358,7 @@
     <price>26.70</price>
     <cost>17.00</cost>
     <available>true</available>
-    <quantity>224</quantity>
+    <quantity>223</quantity>
   </product>
   <product>
     <sku>02321</sku>
@@ -1366,7 +1366,7 @@
     <price>35.00</price>
     <cost>22.26</cost>
     <available>true</available>
-    <quantity>55</quantity>
+    <quantity>54</quantity>
   </product>
   <product>
     <sku>02302</sku>
@@ -1390,7 +1390,7 @@
     <price>25.83</price>
     <cost>16.59</cost>
     <available>true</available>
-    <quantity>26</quantity>
+    <quantity>30</quantity>
   </product>
   <product>
     <sku>02303</sku>
@@ -1430,7 +1430,7 @@
     <price>26.40</price>
     <cost>16.80</cost>
     <available>true</available>
-    <quantity>299</quantity>
+    <quantity>284</quantity>
   </product>
   <product>
     <sku>01945EU</sku>
@@ -1438,7 +1438,7 @@
     <price>15.30</price>
     <cost>9.75</cost>
     <available>true</available>
-    <quantity>11512</quantity>
+    <quantity>11465</quantity>
   </product>
   <product>
     <sku>02314EU</sku>
@@ -1446,7 +1446,7 @@
     <price>29.68</price>
     <cost>19.06</cost>
     <available>true</available>
-    <quantity>4916</quantity>
+    <quantity>4881</quantity>
   </product>
   <product>
     <sku>02317EU</sku>
@@ -1454,7 +1454,7 @@
     <price>19.89</price>
     <cost>12.06</cost>
     <available>true</available>
-    <quantity>242</quantity>
+    <quantity>206</quantity>
   </product>
   <product>
     <sku>02308</sku>
@@ -1486,7 +1486,7 @@
     <price>14.00</price>
     <cost>8.91</cost>
     <available>true</available>
-    <quantity>3271</quantity>
+    <quantity>3267</quantity>
   </product>
   <product>
     <sku>02040EU</sku>
@@ -1494,7 +1494,7 @@
     <price>22.50</price>
     <cost>14.31</cost>
     <available>true</available>
-    <quantity>4216</quantity>
+    <quantity>4190</quantity>
   </product>
   <product>
     <sku>02292</sku>
@@ -1518,7 +1518,7 @@
     <price>28.60</price>
     <cost>18.21</cost>
     <available>true</available>
-    <quantity>45</quantity>
+    <quantity>43</quantity>
   </product>
   <product>
     <sku>02310</sku>
@@ -1534,7 +1534,7 @@
     <price>19.88</price>
     <cost>12.77</cost>
     <available>true</available>
-    <quantity>45</quantity>
+    <quantity>21</quantity>
   </product>
   <product>
     <sku>02250</sku>
@@ -1566,7 +1566,7 @@
     <price>59.30</price>
     <cost>36.72</cost>
     <available>true</available>
-    <quantity>893</quantity>
+    <quantity>890</quantity>
   </product>
   <product>
     <sku>60061</sku>
@@ -1574,7 +1574,7 @@
     <price>49.34</price>
     <cost>27.16</cost>
     <available>true</available>
-    <quantity>20</quantity>
+    <quantity>25</quantity>
   </product>
   <product>
     <sku>60062</sku>
@@ -1598,7 +1598,7 @@
     <price>45.13</price>
     <cost>28.99</cost>
     <available>true</available>
-    <quantity>35</quantity>
+    <quantity>31</quantity>
   </product>
   <product>
     <sku>50012</sku>
@@ -1654,7 +1654,7 @@
     <price>64.09</price>
     <cost>35.28</cost>
     <available>true</available>
-    <quantity>8</quantity>
+    <quantity>7</quantity>
   </product>
   <product>
     <sku>02410</sku>
@@ -1702,7 +1702,7 @@
     <price>16.30</price>
     <cost>10.38</cost>
     <available>true</available>
-    <quantity>86</quantity>
+    <quantity>85</quantity>
   </product>
   <product>
     <sku>60064</sku>
@@ -1782,7 +1782,7 @@
     <price>38.30</price>
     <cost>24.39</cost>
     <available>true</available>
-    <quantity>406</quantity>
+    <quantity>405</quantity>
   </product>
   <product>
     <sku>01751EU</sku>
@@ -1806,7 +1806,7 @@
     <price>45.40</price>
     <cost>28.90</cost>
     <available>true</available>
-    <quantity>683</quantity>
+    <quantity>632</quantity>
   </product>
   <product>
     <sku>01988EU</sku>
@@ -1814,7 +1814,7 @@
     <price>53.20</price>
     <cost>33.84</cost>
     <available>true</available>
-    <quantity>1400</quantity>
+    <quantity>1396</quantity>
   </product>
   <product>
     <sku>01217EU</sku>
@@ -1886,7 +1886,7 @@
     <price>14.70</price>
     <cost>9.36</cost>
     <available>true</available>
-    <quantity>1853</quantity>
+    <quantity>1817</quantity>
   </product>
   <product>
     <sku>01936EU</sku>
@@ -1918,7 +1918,7 @@
     <price>31.20</price>
     <cost>19.84</cost>
     <available>true</available>
-    <quantity>196</quantity>
+    <quantity>193</quantity>
   </product>
   <product>
     <sku>02428</sku>
@@ -1942,7 +1942,7 @@
     <price>32.50</price>
     <cost>20.71</cost>
     <available>true</available>
-    <quantity>39</quantity>
+    <quantity>38</quantity>
   </product>
   <product>
     <sku>02252</sku>
@@ -1974,7 +1974,7 @@
     <price>8.60</price>
     <cost>5.92</cost>
     <available>true</available>
-    <quantity>46</quantity>
+    <quantity>43</quantity>
   </product>
   <product>
     <sku>20102</sku>
@@ -2046,7 +2046,7 @@
     <price>10.56</price>
     <cost>6.78</cost>
     <available>true</available>
-    <quantity>66</quantity>
+    <quantity>64</quantity>
   </product>
   <product>
     <sku>02431</sku>
@@ -2110,7 +2110,7 @@
     <price>62.50</price>
     <cost>34.13</cost>
     <available>true</available>
-    <quantity>1091</quantity>
+    <quantity>1089</quantity>
   </product>
   <product>
     <sku>02511</sku>
@@ -2190,7 +2190,7 @@
     <price>46.20</price>
     <cost>29.43</cost>
     <available>true</available>
-    <quantity>696</quantity>
+    <quantity>656</quantity>
   </product>
   <product>
     <sku>02312</sku>
@@ -2214,7 +2214,7 @@
     <price>28.50</price>
     <cost>18.16</cost>
     <available>true</available>
-    <quantity>56</quantity>
+    <quantity>55</quantity>
   </product>
   <product>
     <sku>60022EU</sku>
@@ -2238,7 +2238,7 @@
     <price>12.50</price>
     <cost>8.00</cost>
     <available>true</available>
-    <quantity>118</quantity>
+    <quantity>94</quantity>
   </product>
   <product>
     <sku>01208EU</sku>
@@ -2246,7 +2246,7 @@
     <price>49.70</price>
     <cost>31.60</cost>
     <available>true</available>
-    <quantity>197</quantity>
+    <quantity>196</quantity>
   </product>
   <product>
     <sku>01637EU</sku>
@@ -2294,7 +2294,7 @@
     <price>49.70</price>
     <cost>31.63</cost>
     <available>true</available>
-    <quantity>37</quantity>
+    <quantity>36</quantity>
   </product>
   <product>
     <sku>02506C</sku>
@@ -2302,7 +2302,7 @@
     <price>40.00</price>
     <cost>25.43</cost>
     <available>true</available>
-    <quantity>857</quantity>
+    <quantity>854</quantity>
   </product>
   <product>
     <sku>02526</sku>
@@ -2310,7 +2310,7 @@
     <price>20.66</price>
     <cost>13.27</cost>
     <available>true</available>
-    <quantity>27</quantity>
+    <quantity>29</quantity>
   </product>
   <product>
     <sku>02521</sku>
@@ -2334,7 +2334,7 @@
     <price>50.00</price>
     <cost>26.63</cost>
     <available>true</available>
-    <quantity>1316</quantity>
+    <quantity>1315</quantity>
   </product>
   <product>
     <sku>60006EU</sku>
@@ -2358,7 +2358,7 @@
     <price>43.10</price>
     <cost>23.53</cost>
     <available>true</available>
-    <quantity>1242</quantity>
+    <quantity>1239</quantity>
   </product>
   <product>
     <sku>60043EU</sku>
@@ -2382,7 +2382,7 @@
     <price>25.60</price>
     <cost>16.34</cost>
     <available>true</available>
-    <quantity>197</quantity>
+    <quantity>161</quantity>
   </product>
   <product>
     <sku>02407EU</sku>
@@ -2390,7 +2390,7 @@
     <price>36.60</price>
     <cost>23.28</cost>
     <available>true</available>
-    <quantity>470</quantity>
+    <quantity>456</quantity>
   </product>
   <product>
     <sku>02322EU</sku>
@@ -2414,7 +2414,7 @@
     <price>25.74</price>
     <cost>16.53</cost>
     <available>true</available>
-    <quantity>47</quantity>
+    <quantity>45</quantity>
   </product>
   <product>
     <sku>02528</sku>
@@ -2462,7 +2462,7 @@
     <price>20.95</price>
     <cost>16.78</cost>
     <available>true</available>
-    <quantity>87</quantity>
+    <quantity>84</quantity>
   </product>
   <product>
     <sku>02537</sku>
@@ -2478,7 +2478,7 @@
     <price>85.00</price>
     <cost>45.20</cost>
     <available>true</available>
-    <quantity>20</quantity>
+    <quantity>18</quantity>
   </product>
   <product>
     <sku>60091</sku>
@@ -2510,7 +2510,7 @@
     <price>26.50</price>
     <cost>16.85</cost>
     <available>true</available>
-    <quantity>389</quantity>
+    <quantity>378</quantity>
   </product>
   <product>
     <sku>60096</sku>
@@ -2534,7 +2534,7 @@
     <price>26.64</price>
     <cost>17.11</cost>
     <available>true</available>
-    <quantity>190</quantity>
+    <quantity>188</quantity>
   </product>
   <product>
     <sku>02543</sku>
@@ -2542,7 +2542,7 @@
     <price>15.95</price>
     <cost>12.82</cost>
     <available>true</available>
-    <quantity>102</quantity>
+    <quantity>101</quantity>
   </product>
   <product>
     <sku>02545</sku>
@@ -2558,7 +2558,7 @@
     <price>21.38</price>
     <cost>13.73</cost>
     <available>true</available>
-    <quantity>102</quantity>
+    <quantity>98</quantity>
   </product>
   <product>
     <sku>02546</sku>
@@ -2598,7 +2598,7 @@
     <price>73.49</price>
     <cost>47.04</cost>
     <available>true</available>
-    <quantity>80</quantity>
+    <quantity>79</quantity>
   </product>
   <product>
     <sku>60099</sku>
@@ -2606,7 +2606,7 @@
     <price>58.41</price>
     <cost>34.83</cost>
     <available>true</available>
-    <quantity>208</quantity>
+    <quantity>206</quantity>
   </product>
   <product>
     <sku>02554</sku>
@@ -2630,7 +2630,7 @@
     <price>78.71</price>
     <cost>50.54</cost>
     <available>true</available>
-    <quantity>259</quantity>
+    <quantity>258</quantity>
   </product>
   <product>
     <sku>02555</sku>
@@ -2646,7 +2646,7 @@
     <price>65.34</price>
     <cost>41.96</cost>
     <available>true</available>
-    <quantity>98</quantity>
+    <quantity>97</quantity>
   </product>
   <product>
     <sku>40102</sku>
@@ -2785,12 +2785,12 @@
     <quantity>1585</quantity>
   </product>
   <product>
-    <sku>40108</sku>
-    <barcode>8720648297724</barcode>
-    <price>24.90</price>
-    <cost>13.71</cost>
+    <sku>40118</sku>
+    <barcode>8721593211193</barcode>
+    <price>64.90</price>
+    <cost>35.72</cost>
     <available>true</available>
-    <quantity>3149</quantity>
+    <quantity>870</quantity>
   </product>
   <product>
     <sku>02560</sku>
@@ -2798,6 +2798,6 @@
     <price>34.55</price>
     <cost>22.19</cost>
     <available>true</available>
-    <quantity>114</quantity>
+    <quantity>113</quantity>
   </product>
 </products>
