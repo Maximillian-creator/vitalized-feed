@@ -101,6 +101,8 @@ def main():
     if products and niet > 0.30 * len(products) and os.environ.get("FORCE_FEED") != "1":
         raise SystemExit(f"❌ {niet} van {len(products)} zouden uitverkocht worden (>30%) - feed NIET "
                          "overschreven. Controleer de bron; forceren kan met FORCE_FEED=1.")
+    import prijsrem
+    print(prijsrem.verslag(prijsrem.pas_toe(root, OUTPUT_FILE)))
     save_xml(root, OUTPUT_FILE)
 
     print(f"⏱️  Klaar in {time.time() - start:.0f}s — {len(products)} producten in de feed")
